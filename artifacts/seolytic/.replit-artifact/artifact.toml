@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SEOlytic – AI SEO Auditor"
+description = "A production-oriented SEO auditing workspace that lets teams crawl websites, understand issues, and prioritize fixes with evidence-backed AI recommendations."
+version = "1.0.0"
+id = "artifacts/seolytic"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24727
+
+[services.development]
+run = "pnpm --filter @workspace/seolytic run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/seolytic", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/seolytic/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24727"
+BASE_PATH = "/"

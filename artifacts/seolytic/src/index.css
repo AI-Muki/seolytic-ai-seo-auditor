@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 44 33% 96%;
+  --foreground: 218 31% 16%;
+  --border: 215 22% 87%;
+  --input: 215 22% 87%;
+  --ring: 169 65% 39%;
+  --card: 45 38% 99%;
+  --card-foreground: 218 31% 16%;
+  --card-border: 215 22% 87%;
+  --popover: 45 38% 99%;
+  --popover-foreground: 218 31% 16%;
+  --primary: 169 65% 33%;
+  --primary-foreground: 44 33% 97%;
+  --secondary: 207 36% 92%;
+  --secondary-foreground: 211 44% 24%;
+  --muted: 39 26% 91%;
+  --muted-foreground: 216 16% 46%;
+  --accent: 34 88% 57%;
+  --accent-foreground: 26 48% 14%;
+  --destructive: 6 65% 48%;
+  --destructive-foreground: 44 33% 97%;
+  --app-font-sans: 'DM Sans', sans-serif;
+  --app-font-mono: 'Space Mono', monospace;
+  --radius: 0.8rem;
+}
+
+.dark {
+  --background: 215 30% 11%;
+  --foreground: 45 28% 94%;
+  --border: 215 21% 24%;
+  --input: 215 21% 24%;
+  --ring: 169 59% 47%;
+  --card: 215 28% 14%;
+  --card-foreground: 45 28% 94%;
+  --card-border: 215 21% 24%;
+  --popover: 215 28% 14%;
+  --popover-foreground: 45 28% 94%;
+  --primary: 169 59% 47%;
+  --primary-foreground: 214 38% 12%;
+  --secondary: 215 23% 21%;
+  --secondary-foreground: 45 28% 94%;
+  --muted: 215 23% 20%;
+  --muted-foreground: 215 14% 66%;
+  --accent: 34 86% 56%;
+  --accent-foreground: 28 45% 12%;
+  --destructive: 6 70% 57%;
+  --destructive-foreground: 45 28% 94%;
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-background text-foreground antialiased; font-family: var(--app-font-sans); }
+  button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+  ::selection { background: hsl(var(--accent) / .3); }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono-ui { font-family: var(--app-font-mono); }
+  .text-balance { text-wrap: balance; }
+  .surface-grid {
+    background-image: linear-gradient(hsl(var(--border) / .38) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / .38) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .noise::after { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .035; z-index: 50; background-image: radial-gradient(hsl(var(--foreground) / .8) .5px, transparent .5px); background-size: 5px 5px; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 8px; }
+}
+
+.app-enter { animation: app-enter .45s cubic-bezier(.22,1,.36,1) both; }
+@keyframes app-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100% { opacity: .42; transform: scale(.92); } 50% { opacity: 1; transform: scale(1); } }
+.scan-line { animation: scan-line 2.8s ease-in-out infinite; }
+@keyframes scan-line { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: .7; } 80% { opacity: .7; } 100% { transform: translateY(190px); opacity: 0; } }
+.field { width: 100%; border-radius: .65rem; border: 1px solid hsl(var(--input)); background: hsl(var(--background)); padding: .7rem .85rem; font-size: .875rem; color: hsl(var(--foreground)); outline: none; transition: border-color .2s, box-shadow .2s; }
+.field:focus { border-color: hsl(var(--primary) / .7); box-shadow: 0 0 0 3px hsl(var(--primary) / .1); }
+.field::placeholder { color: hsl(var(--muted-foreground)); }
+.label { font-family: var(--app-font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: .12em; color: hsl(var(--muted-foreground)); }

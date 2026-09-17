@@ -1,0 +1,527 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: SEOlytic AI SEO Auditor API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: projects
+  - name: crawls
+  - name: pages
+  - name: issues
+  - name: assistant
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [projects]
+      summary: List SEO projects
+      responses:
+        "200":
+          description: Projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+    post:
+      operationId: createProject
+      tags: [projects]
+      summary: Create an SEO project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectInput"
+      responses:
+        "201":
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+  /projects/{projectId}:
+    get:
+      operationId: getProject
+      tags: [projects]
+      summary: Get a project
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateProject
+      tags: [projects]
+      summary: Update project settings
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUpdate"
+      responses:
+        "200":
+          description: Updated project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    delete:
+      operationId: deleteProject
+      tags: [projects]
+      summary: Delete a project
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "204":
+          description: Project deleted
+  /projects/{projectId}/dashboard:
+    get:
+      operationId: getProjectDashboard
+      tags: [projects]
+      summary: Get dashboard aggregates for a project
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /projects/{projectId}/crawls:
+    get:
+      operationId: listCrawls
+      tags: [crawls]
+      summary: List crawl history
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Crawl history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Crawl"
+    post:
+      operationId: startCrawl
+      tags: [crawls]
+      summary: Start an asynchronous crawl
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrawlInput"
+      responses:
+        "202":
+          description: Crawl queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crawl"
+  /projects/{projectId}/crawls/{crawlId}:
+    get:
+      operationId: getCrawl
+      tags: [crawls]
+      summary: Get crawl progress
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/CrawlId"
+      responses:
+        "200":
+          description: Crawl
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crawl"
+  /projects/{projectId}/pages:
+    get:
+      operationId: listPages
+      tags: [pages]
+      summary: List crawled pages
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Page results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageList"
+  /projects/{projectId}/pages/{pageId}:
+    get:
+      operationId: getPage
+      tags: [pages]
+      summary: Get a detailed page report
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/PageId"
+      responses:
+        "200":
+          description: Page report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageReport"
+  /projects/{projectId}/issues:
+    get:
+      operationId: listIssues
+      tags: [issues]
+      summary: List SEO issues
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: SEO issues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SEOIssue"
+  /projects/{projectId}/issues/{issueId}:
+    patch:
+      operationId: updateIssue
+      tags: [issues]
+      summary: Mark an issue reviewed or unreviewed
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/IssueId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssueUpdate"
+      responses:
+        "200":
+          description: Updated issue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SEOIssue"
+  /projects/{projectId}/recommendations:
+    get:
+      operationId: listRecommendations
+      tags: [assistant]
+      summary: List AI recommendations
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Recommendations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AIRecommendation"
+  /projects/{projectId}/assistant:
+    post:
+      operationId: askAssistant
+      tags: [assistant]
+      summary: Ask the project AI assistant
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssistantInput"
+      responses:
+        "200":
+          description: Assistant answer grounded in crawl data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantResponse"
+components:
+  parameters:
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema: { type: string }
+    CrawlId:
+      name: crawlId
+      in: path
+      required: true
+      schema: { type: string }
+    PageId:
+      name: pageId
+      in: path
+      required: true
+      schema: { type: string }
+    IssueId:
+      name: issueId
+      in: path
+      required: true
+      schema: { type: string }
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+      required: [error]
+    Project:
+      type: object
+      required: [id, name, url, status, score, lastCrawlAt, pagesCrawled, issueCount]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        url: { type: string, format: uri }
+        keywords:
+          type: array
+          items: { type: string }
+        country: { type: ["string", "null"] }
+        language: { type: ["string", "null"] }
+        status: { type: string, enum: [active, crawling, paused, error] }
+        score: { type: integer, minimum: 0, maximum: 100 }
+        lastCrawlAt: { type: ["string", "null"], format: date-time }
+        pagesCrawled: { type: integer }
+        issueCount: { type: integer }
+    ProjectInput:
+      type: object
+      required: [name, url]
+      properties:
+        name: { type: string, minLength: 1 }
+        url: { type: string, format: uri }
+        keywords:
+          type: array
+          items: { type: string }
+        country: { type: string }
+        language: { type: string }
+    ProjectUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        keywords:
+          type: array
+          items: { type: string }
+        country: { type: string }
+        language: { type: string }
+        status: { type: string, enum: [active, paused] }
+    CrawlInput:
+      type: object
+      properties:
+        maxPages: { type: integer, minimum: 1, maximum: 500 }
+    Crawl:
+      type: object
+      required: [id, projectId, status, pagesDiscovered, pagesAnalyzed, issuesFound, startedAt]
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        status: { type: string, enum: [queued, crawling, completed, failed] }
+        pagesDiscovered: { type: integer }
+        pagesAnalyzed: { type: integer }
+        issuesFound: { type: integer }
+        score: { type: ["integer", "null"] }
+        startedAt: { type: string, format: date-time }
+        completedAt: { type: ["string", "null"], format: date-time }
+        error: { type: ["string", "null"] }
+    Dashboard:
+      type: object
+      required: [project, scoreHistory, categoryScores, severityCounts, metrics]
+      properties:
+        project:
+          $ref: "#/components/schemas/Project"
+        scoreHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScorePoint"
+        categoryScores:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryScore"
+        severityCounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountPoint"
+        metrics:
+          $ref: "#/components/schemas/DashboardMetrics"
+    ScorePoint:
+      type: object
+      required: [date, score]
+      properties:
+        date: { type: string }
+        score: { type: integer }
+    CategoryScore:
+      type: object
+      required: [category, score]
+      properties:
+        category: { type: string }
+        score: { type: integer }
+    CountPoint:
+      type: object
+      required: [label, count]
+      properties:
+        label: { type: string }
+        count: { type: integer }
+    DashboardMetrics:
+      type: object
+      required: [pages, critical, high, medium, low, brokenLinks, missingMetadata, duplicateContent]
+      properties:
+        pages: { type: integer }
+        critical: { type: integer }
+        high: { type: integer }
+        medium: { type: integer }
+        low: { type: integer }
+        brokenLinks: { type: integer }
+        missingMetadata: { type: integer }
+        duplicateContent: { type: integer }
+    Page:
+      type: object
+      required: [id, url, status, score, title, h1, metaDescription, issueCount]
+      properties:
+        id: { type: string }
+        url: { type: string, format: uri }
+        status: { type: integer }
+        score: { type: integer }
+        title: { type: ["string", "null"] }
+        h1: { type: ["string", "null"] }
+        metaDescription: { type: ["string", "null"] }
+        issueCount: { type: integer }
+    PageList:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Page" }
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+    PageReport:
+      allOf:
+        - $ref: "#/components/schemas/Page"
+        - type: object
+          required: [headings, images, links, social, structuredData, issues]
+          properties:
+            headings:
+              type: object
+              properties:
+                h1: { type: array, items: { type: string } }
+                h2: { type: array, items: { type: string } }
+                h3: { type: array, items: { type: string } }
+            images:
+              type: object
+              properties:
+                total: { type: integer }
+                missingAlt: { type: integer }
+            links:
+              type: object
+              properties:
+                internal: { type: integer }
+                external: { type: integer }
+                broken: { type: integer }
+            social:
+              type: object
+              properties:
+                openGraph: { type: boolean }
+                twitterCard: { type: boolean }
+            structuredData:
+              type: object
+              properties:
+                present: { type: boolean }
+                types: { type: array, items: { type: string } }
+            issues:
+              type: array
+              items: { $ref: "#/components/schemas/SEOIssue" }
+    SEOIssue:
+      type: object
+      required: [id, severity, category, title, url, description, whyItMatters, recommendedFix, reviewed]
+      properties:
+        id: { type: string }
+        severity: { type: string, enum: [Critical, High, Medium, Low] }
+        category: { type: string }
+        title: { type: string }
+        url: { type: string, format: uri }
+        description: { type: string }
+        whyItMatters: { type: string }
+        recommendedFix: { type: string }
+        reviewed: { type: boolean }
+        recommendationId: { type: ["string", "null"] }
+    IssueUpdate:
+      type: object
+      required: [reviewed]
+      properties:
+        reviewed: { type: boolean }
+    AIRecommendation:
+      type: object
+      required: [id, issueId, problem, whyItMatters, recommendedSolution, suggestedImplementation, createdAt]
+      properties:
+        id: { type: string }
+        issueId: { type: string }
+        problem: { type: string }
+        whyItMatters: { type: string }
+        recommendedSolution: { type: string }
+        suggestedImplementation: { type: string }
+        createdAt: { type: string, format: date-time }
+    AssistantInput:
+      type: object
+      required: [question]
+      properties:
+        question: { type: string, minLength: 1, maxLength: 2000 }
+    AssistantResponse:
+      type: object
+      required: [answer, sources]
+      properties:
+        answer: { type: string }
+        sources:
+          type: array
+          items:
+            type: object
+            required: [label, url]
+            properties:
+              label: { type: string }
+              url: { type: string, format: uri }
+

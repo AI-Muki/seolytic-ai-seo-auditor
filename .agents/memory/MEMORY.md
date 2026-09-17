@@ -1,0 +1,1 @@
+- [SEOlytic auth boundary](auth-boundary.md) — Clerk authenticates both browser routes and API project routes; health remains public.
